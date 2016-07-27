@@ -26,6 +26,13 @@ public final class ListUtils {
     private ListUtils() {
     }
 
+    public static int size(List list) {
+        if (list == null) {
+            return 0;
+        }
+        return list.size();
+    }
+
     public static boolean isEmpty(List list) {
         if (list == null || list.isEmpty()) {
             return true;

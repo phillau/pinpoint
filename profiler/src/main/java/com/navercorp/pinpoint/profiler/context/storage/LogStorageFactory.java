@@ -48,6 +48,11 @@ public class LogStorageFactory implements StorageFactory {
         }
 
         @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
         public void flush() {
         }
 

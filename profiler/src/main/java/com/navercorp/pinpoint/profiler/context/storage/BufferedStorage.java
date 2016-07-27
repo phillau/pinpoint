@@ -93,6 +93,11 @@ public class BufferedStorage implements Storage {
         }
     }
 
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
     public void flush() {
         List<SpanEvent> spanEventList;
         spanEventList = storage;

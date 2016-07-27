@@ -126,6 +126,26 @@ struct TSpanChunk {
   11: optional i16 applicationServiceType
 }
 
+struct TAsyncSpan {
+  1: i32 elapsed = 0
+  2: list<TSpanEvent> spanEventList
+}
+
+struct TAsyncSpanChunk {
+  1: string agentId
+  2: string applicationName
+  3: i64 agentStartTime
+  4: i16 serviceType
+  5: binary  transactionId;
+
+  8: i64 spanId
+
+  9: optional string endPoint
+
+  10: list<TAsyncSpan> asyncSpanList
+
+  11: optional i16 applicationServiceType
+}
 
 struct TStringMetaData {
 

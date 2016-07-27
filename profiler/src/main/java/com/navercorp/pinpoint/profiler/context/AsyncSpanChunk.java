@@ -1,6 +1,5 @@
 /*
- * Copyright 2014 NAVER Corp.
- *
+ * Copyright 2016 NAVER Corp.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,34 +11,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.navercorp.pinpoint.profiler.context.storage;
+package com.navercorp.pinpoint.profiler.context;
 
-import com.navercorp.pinpoint.profiler.context.Span;
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
+import com.navercorp.pinpoint.thrift.dto.TAsyncSpanChunk;
+
+import java.util.List;
 
 /**
- * @author emeroad
- * @author jaehong.kim
+ * @author Taejin Koo
  */
-public interface Storage {
+public class AsyncSpanChunk extends TAsyncSpanChunk {
 
-    /**
-     *
-     * @param spanEvent
-     */
-    void store(SpanEvent spanEvent);
+    public AsyncSpanChunk(List<AsyncSpan> asyncSpanList) {
+        if (asyncSpanList == null) {
+            throw new NullPointerException("asyncSpanList must not be null");
+        }
 
-    /**
-     *
-     * @param span
-     */
-    void store(Span span);
+        setAsyncSpanList((List) asyncSpanList);
+    }
 
-    boolean isEmpty();
-
-    void flush();
-
-    void close();
 }

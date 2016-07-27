@@ -54,6 +54,11 @@ public final class SimpleSpanStorage implements Storage {
     }
 
     @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
     public void flush() {
     }
 

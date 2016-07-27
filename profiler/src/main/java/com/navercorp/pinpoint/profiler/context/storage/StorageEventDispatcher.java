@@ -1,6 +1,5 @@
 /*
- * Copyright 2014 NAVER Corp.
- *
+ * Copyright 2016 NAVER Corp.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,34 +11,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.navercorp.pinpoint.profiler.context.storage;
 
-import com.navercorp.pinpoint.profiler.context.Span;
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
-
 /**
- * @author emeroad
- * @author jaehong.kim
+ * @author Taejin Koo
  */
-public interface Storage {
+public interface StorageEventDispatcher extends Storage {
 
-    /**
-     *
-     * @param spanEvent
-     */
-    void store(SpanEvent spanEvent);
+    boolean start(int queueSize);
 
-    /**
-     *
-     * @param span
-     */
-    void store(Span span);
+    boolean stop();
 
-    boolean isEmpty();
+    void flush(long spanId);
 
-    void flush();
+    void close(long spanId);
 
-    void close();
 }

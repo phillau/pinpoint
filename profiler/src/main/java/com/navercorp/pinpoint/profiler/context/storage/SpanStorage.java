@@ -19,6 +19,7 @@ package com.navercorp.pinpoint.profiler.context.storage;
 import com.navercorp.pinpoint.profiler.context.Span;
 import com.navercorp.pinpoint.profiler.context.SpanEvent;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
+import com.navercorp.pinpoint.rpc.util.ListUtils;
 import com.navercorp.pinpoint.thrift.dto.TSpanEvent;
 
 import java.util.ArrayList;
@@ -60,6 +61,11 @@ public class SpanStorage implements Storage {
         span.setSpanEventList(spanEventList);
         spanEventList = null;
         this.dataSender.send(span);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return ListUtils.isEmpty(spanEventList);
     }
 
     @Override

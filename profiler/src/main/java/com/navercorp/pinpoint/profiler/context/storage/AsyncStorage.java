@@ -43,6 +43,11 @@ public class AsyncStorage implements Storage {
     }
 
     @Override
+    public boolean isEmpty() {
+        return storage.isEmpty();
+    }
+
+    @Override
     public void flush() {
         storage.flush();
     }

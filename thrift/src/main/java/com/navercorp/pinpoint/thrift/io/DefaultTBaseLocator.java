@@ -16,6 +16,7 @@
 
 package com.navercorp.pinpoint.thrift.io;
 
+import com.navercorp.pinpoint.thrift.dto.TAsyncSpanChunk;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 
@@ -57,6 +58,9 @@ class DefaultTBaseLocator implements TBaseLocator {
     private static final short SPANCHUNK = 70;
     private static final Header SPANCHUNK_HEADER = createHeader(SPANCHUNK);
 
+    private static final short ASYNCSPANCHUNK = 75;
+    private static final Header ASYNCSPANCHUNK_HEADER = createHeader(ASYNCSPANCHUNK);
+
     private static final short SPANEVENT = 80;
     private static final Header SPANEVENT_HEADER = createHeader(SPANEVENT);
     
@@ -88,6 +92,8 @@ class DefaultTBaseLocator implements TBaseLocator {
                 return new TAgentStatBatch();
             case SPANCHUNK:
                 return new TSpanChunk();
+            case ASYNCSPANCHUNK:
+                return new TAsyncSpanChunk();
             case SPANEVENT:
                 return new TSpanEvent();
             case SQLMETADATA:
@@ -113,6 +119,9 @@ class DefaultTBaseLocator implements TBaseLocator {
         }
         if (tbase instanceof TSpanChunk) {
             return SPANCHUNK_HEADER;
+        }
+        if (tbase instanceof TAsyncSpanChunk) {
+            return ASYNCSPANCHUNK_HEADER;
         }
         if (tbase instanceof TSpanEvent) {
             return SPANEVENT_HEADER;
@@ -163,6 +172,9 @@ class DefaultTBaseLocator implements TBaseLocator {
             return true;
         }
         if (clazz.equals(TSpanChunk.class)) {
+            return true;
+        }
+        if (clazz.equals(TAsyncSpanChunk.class)) {
             return true;
         }
         if (clazz.equals(TAgentInfo.class)) {

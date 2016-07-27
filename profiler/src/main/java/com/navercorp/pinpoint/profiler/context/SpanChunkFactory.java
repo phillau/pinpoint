@@ -18,6 +18,7 @@ package com.navercorp.pinpoint.profiler.context;
 
 import com.navercorp.pinpoint.profiler.AgentInformation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,15 +36,7 @@ public class SpanChunkFactory {
     }
 
     public SpanChunk create(final List<SpanEvent> flushData) {
-        if (flushData == null) {
-            throw new NullPointerException("flushData must not be null");
-        }
-        // TODO must be equals to or greater than 1
-        final int size = flushData.size();
-        if (size < 1) {
-            throw new IllegalArgumentException("flushData.size() < 1 size:" + size);
-        }
-
+        assertFlushData(flushData);
 
         final SpanEvent first = flushData.get(0);
         if (first == null) {
@@ -70,4 +63,53 @@ public class SpanChunkFactory {
         spanChunk.setEndPoint(parentSpan.getEndPoint());
         return spanChunk;
     }
+
+    public AsyncSpanChunk createAsyncSpanChunk(final List<Span> flushData) {
+        final Span first = flushData.get(0);
+        if (first == null) {
+            throw new IllegalStateException("first SpanEvent is null");
+        }
+        List<AsyncSpan> asyncSpanList = new ArrayList<AsyncSpan>(flushData.size());
+        for (Span span : flushData) {
+            asyncSpanList.add(new AsyncSpan(span));
+        }
+        return createAsyncSpanChunk(first, asyncSpanList);
+    }
+
+    public AsyncSpanChunk createAsyncSpanChunk(final Span span, final List<AsyncSpan> flushData) {
+        assertFlushData(flushData);
+
+        if (span == null) {
+            throw new IllegalStateException("span may not be null");
+        }
+
+        final String agentId = this.agentInformation.getAgentId();
+
+        final AsyncSpanChunk asyncSpanChunk = new AsyncSpanChunk(flushData);
+        asyncSpanChunk.setAgentId(agentId);
+        asyncSpanChunk.setApplicationName(agentId);
+        asyncSpanChunk.setAgentStartTime(span.getAgentStartTime());
+        asyncSpanChunk.setApplicationServiceType(span.getApplicationServiceType());
+        asyncSpanChunk.setServiceType(span.getServiceType());
+
+        final byte[] transactionId = span.getTransactionId();
+        asyncSpanChunk.setTransactionId(transactionId);
+
+        asyncSpanChunk.setSpanId(span.getSpanId());
+        asyncSpanChunk.setEndPoint(span.getEndPoint());
+
+        return asyncSpanChunk;
+    }
+
+    private void assertFlushData(List flushData) {
+        if (flushData == null) {
+            throw new NullPointerException("flushData must not be null");
+        }
+        // TODO must be equals to or greater than 1
+        final int size = flushData.size();
+        if (size < 1) {
+            throw new IllegalArgumentException("flushData.size() < 1 size:" + size);
+        }
+    }
+
 }
