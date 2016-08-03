@@ -75,6 +75,8 @@ public interface ProfilerConfig {
 
     boolean isIoBufferingEnable();
 
+    boolean isIoSecondaryStorageEnable();
+
     int getIoBufferingBufferSize();
 
     int getProfileJvmCollectInterval();

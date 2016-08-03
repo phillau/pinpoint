@@ -39,6 +39,11 @@ public class UdpSpanDispatchHandler extends AbstractDispatchHandler {
     @Qualifier("spanChunkHandler")
     private SimpleHandler spanChunkHandler;
 
+    @Autowired()
+    @Qualifier("asyncSpanChunkHandler")
+    private SimpleHandler asyncSpanChunkHandler;
+
+
     public UdpSpanDispatchHandler() {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
@@ -52,6 +57,9 @@ public class UdpSpanDispatchHandler extends AbstractDispatchHandler {
         }
         if (tBase instanceof TSpanChunk) {
             return spanChunkHandler;
+        }
+        if (tBase instanceof TAsyncSpanChunk) {
+            return asyncSpanChunkHandler;
         }
 
         return null;

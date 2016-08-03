@@ -170,6 +170,7 @@ public class DefaultProfilerConfig implements ProfilerConfig {
     // span buffering
     private boolean ioBufferingEnable;
     private int ioBufferingBufferSize;
+    private boolean ioSecondaryStorageEnable;
 
     private int profileJvmCollectInterval;
     private String profileJvmVendorName;
@@ -329,6 +330,11 @@ public class DefaultProfilerConfig implements ProfilerConfig {
     @Override
     public boolean isIoBufferingEnable() {
         return ioBufferingEnable;
+    }
+
+    @Override
+    public boolean isIoSecondaryStorageEnable() {
+        return ioSecondaryStorageEnable;
     }
 
     @Override
@@ -676,6 +682,7 @@ public class DefaultProfilerConfig implements ProfilerConfig {
 
         // configuration for sampling and IO buffer 
         this.ioBufferingEnable = readBoolean("profiler.io.buffering.enable", true);
+        this.ioSecondaryStorageEnable = readBoolean("profiler.io.secondarystorage.enable", false);
 
         // it may be a problem to be here.  need to modify(delete or move or .. )  this configuration.
         this.ioBufferingBufferSize = readInt("profiler.io.buffering.buffersize", 20);
@@ -922,6 +929,8 @@ public class DefaultProfilerConfig implements ProfilerConfig {
         builder.append(ioBufferingEnable);
         builder.append(", ioBufferingBufferSize=");
         builder.append(ioBufferingBufferSize);
+        builder.append(", ioSecondaryStorageEnable=");
+        builder.append(ioSecondaryStorageEnable);
         builder.append(", profileJvmCollectInterval=");
         builder.append(profileJvmCollectInterval);
         builder.append(", profilableClassFilter=");
