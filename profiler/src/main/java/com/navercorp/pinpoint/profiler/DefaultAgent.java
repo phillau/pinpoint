@@ -34,7 +34,11 @@ import com.navercorp.pinpoint.profiler.context.DefaultTraceContext;
 import com.navercorp.pinpoint.profiler.context.TransactionCounter;
 import com.navercorp.pinpoint.profiler.context.active.ActiveTraceLocator;
 import com.navercorp.pinpoint.profiler.context.storage.BufferedStorageFactory;
+import com.navercorp.pinpoint.profiler.context.storage.DefaultAsyncSupportedStorageFactory;
+import com.navercorp.pinpoint.profiler.context.storage.DefaultStorageEventDispatcher;
+import com.navercorp.pinpoint.profiler.context.storage.ScheduledStorageEventGenerator;
 import com.navercorp.pinpoint.profiler.context.storage.SpanStorageFactory;
+import com.navercorp.pinpoint.profiler.context.storage.StorageEventDispatcher;
 import com.navercorp.pinpoint.profiler.context.storage.StorageFactory;
 import com.navercorp.pinpoint.profiler.instrument.ASMBytecodeDumpService;
 import com.navercorp.pinpoint.profiler.instrument.BytecodeDumpTransformer;
@@ -326,11 +330,19 @@ public class DefaultAgent implements Agent {
     }
 
     protected StorageFactory createStorageFactory() {
-        if (profilerConfig.isIoBufferingEnable()) {
+        if (profilerConfig.isIoSecondaryStorageEnable()) {
+            BufferedStorageFactory localRootSpanStorageFactory = new BufferedStorageFactory(this.spanDataSender, this.profilerConfig, this.agentInformation);
+            StorageEventDispatcher storageEventDispatcher = new DefaultStorageEventDispatcher(spanDataSender, profilerConfig, agentInformation);
+            storageEventDispatcher.start(profilerConfig.getIoBufferingBufferSize());
+
+            ScheduledStorageEventGenerator scheduledStorageEventGenerator  = new ScheduledStorageEventGenerator(storageEventDispatcher);
+            scheduledStorageEventGenerator.start(60000);
+
+            return new DefaultAsyncSupportedStorageFactory(localRootSpanStorageFactory, storageEventDispatcher);
+        } else if (profilerConfig.isIoBufferingEnable()) {
             return new BufferedStorageFactory(this.spanDataSender, this.profilerConfig, this.agentInformation);
         } else {
             return new SpanStorageFactory(spanDataSender);
-
         }
     }
 

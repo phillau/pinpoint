@@ -14,8 +14,7 @@ public class ScheduledStorageEventGenerator {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-//    private static final long DEFAULT_FLUSH_DELAY = 10000;
-    private static final long DEFAULT_CLOSE_DELAY = 60000;
+    private static final long DEFAULT_FLUSH_DELAY = 60000;
 
     private volatile boolean closed;
 
@@ -32,9 +31,8 @@ public class ScheduledStorageEventGenerator {
         this.timer = new Timer(ClassUtils.simpleClassName(this) + "-Timer", true);
     }
 
-    public void start(long flushDelay, long closeDelay) {
-//        timer.schedule(new FlushTimerTask(flushDelay), flushDelay);
-        timer.schedule(new CloseTimerTask(closeDelay), closeDelay);
+    public void start(long flushDelay) {
+        timer.schedule(new FlushTimerTask(flushDelay), flushDelay);
     }
 
     public void stop() {
@@ -50,46 +48,23 @@ public class ScheduledStorageEventGenerator {
         }
     }
 
-//    class FlushTimerTask extends TimerTask {
-//
-//        private final long delay;
-//
-//        public FlushTimerTask(long delay) {
-//            this.delay = delay;
-//        }
-//
-//        @Override
-//        public void run() {
-//            try {
-//                storageEventDispatcher.flush();
-//            } catch (Exception e) {
-//                logger.warn("FlushTimerTask failed. error:{}", e.getMessage(), e);
-//            } finally {
-//                if (timer != null && !closed) {
-//                    timer.schedule(new FlushTimerTask(delay), delay);
-//                }
-//            }
-//        }
-//
-//    }
-
-    class CloseTimerTask extends TimerTask {
+    class FlushTimerTask extends TimerTask {
 
         private final long delay;
 
-        public CloseTimerTask(long delay) {
+        public FlushTimerTask(long delay) {
             this.delay = delay;
         }
 
         @Override
         public void run() {
             try {
-                storageEventDispatcher.close();
+                storageEventDispatcher.flush();
             } catch (Exception e) {
-                logger.warn("CloseTimerTask failed. error:{}", e.getMessage(), e);
+                logger.warn("FlushTimerTask failed. error:{}", e.getMessage(), e);
             } finally {
                 if (timer != null && !closed) {
-                    timer.schedule(new CloseTimerTask(delay), delay);
+                    timer.schedule(new FlushTimerTask(delay), delay);
                 }
             }
         }

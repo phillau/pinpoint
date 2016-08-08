@@ -117,6 +117,7 @@ struct TSpanChunk {
 //  7: i64 traceTransactionSequence;
     5: binary  transactionId;
 
+
   8: i64 spanId
 
   9: optional string endPoint

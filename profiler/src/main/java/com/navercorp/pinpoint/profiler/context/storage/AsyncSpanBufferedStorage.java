@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +49,7 @@ public class AsyncSpanBufferedStorage implements Storage {
     private final int minimumCount;
     private final int maximumCount;
 
-    private final Map<Span, List<SpanEvent>> progressingSpanRepository = new HashMap<Span, List<SpanEvent>>();
+    private final Map<Span, List<SpanEvent>> progressingSpanRepository = new IdentityHashMap<Span, List<SpanEvent>>();
     private final List<Span> completedSpanRepository = new ArrayList<Span>();
     private final SpanChunkFactory spanChunkFactory;
 
@@ -98,6 +98,7 @@ public class AsyncSpanBufferedStorage implements Storage {
     @Override
     public void store(SpanEvent spanEvent) {
         Span span = spanEvent.getSpan();
+
         List<SpanEvent> spanEventList = progressingSpanRepository.get(span);
         if (spanEventList == null) {
             spanEventList = new ArrayList<SpanEvent>(maximumCount);
@@ -114,6 +115,8 @@ public class AsyncSpanBufferedStorage implements Storage {
 
     @Override
     public void store(Span span) {
+        logger.warn("store Span:{}", span, span.hashCode());
+
         List<SpanEvent> spanEventList = progressingSpanRepository.remove(span);
         if (spanEventList != null && !spanEventList.isEmpty()) {
             span.setSpanEventList((List) spanEventList);
@@ -123,6 +126,7 @@ public class AsyncSpanBufferedStorage implements Storage {
         flush(false);
     }
 
+
     private void flush(boolean all) {
         while (true) {
             List<Span> flushSpanList = getFlushSpanList(completedSpanRepository);
@@ -130,7 +134,7 @@ public class AsyncSpanBufferedStorage implements Storage {
                 break;
             }
 
-            completedSpanRepository.remove(flushSpanList);
+            completedSpanRepository.removeAll(flushSpanList);
             send(flushSpanList);
         }
 

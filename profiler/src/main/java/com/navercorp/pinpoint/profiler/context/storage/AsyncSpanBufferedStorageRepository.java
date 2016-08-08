@@ -36,6 +36,11 @@ public class AsyncSpanBufferedStorageRepository<T extends Storage> implements St
     }
 
     @Override
+    public T find(long spanId) {
+        return repository.get(spanId);
+    }
+
+    @Override
     public T get(long spanId) {
         T storage = repository.get(spanId);
         if (storage == null) {

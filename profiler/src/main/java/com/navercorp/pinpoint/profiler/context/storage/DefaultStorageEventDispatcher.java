@@ -37,9 +37,8 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
     private static final int DEFAULT_ASYNC_QUEUE_SIZE = 500;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final boolean isDebug = logger.isDebugEnabled();
-    private volatile boolean closed;
-
     private final StorageRepository<Storage> storageRepository;
+    private volatile boolean closed;
     private AsyncQueueingExecutor<Object> executor;
 
     public DefaultStorageEventDispatcher(DataSender dataSender, ProfilerConfig config, AgentInformation agentInformation) {
@@ -96,6 +95,10 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
 
             @Override
             public void execute(Object message) {
+                if (isDebug) {
+                    logger.debug("handleMessage event:{}", message);
+                }
+
                 if (message instanceof SpanEvent) {
                     store0((SpanEvent) message);
                 } else if (message instanceof Span) {
@@ -147,6 +150,9 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
     private void store0(Span span) {
         Storage storage = storageRepository.get(span.getSpanId());
         storage.store(span);
+        if (storage.isEmpty()) {
+            storageRepository.remove(storage);
+        }
     }
 
     @Override
@@ -166,6 +172,9 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
         List<Storage> storageList = storageRepository.getAll();
         for (Storage storage : storageList) {
             storage.flush();
+            if (storage.isEmpty()) {
+                storageRepository.remove(storage);
+            }
         }
     }
 
@@ -178,8 +187,14 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
     }
 
     private void flush0(long spanId) {
-        Storage storage = storageRepository.get(spanId);
+        Storage storage = storageRepository.find(spanId);
+        if (storage == null) {
+            return;
+        }
         storage.flush();
+        if (storage.isEmpty()) {
+            storageRepository.remove(storage);
+        }
     }
 
     @Override
@@ -195,20 +210,10 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
     }
 
     private void close0(boolean force) {
-        if (force) {
-            List<Storage> storageList = storageRepository.getAll();
-            for (Storage storage : storageList) {
-                storage.close();
-                storageRepository.remove(storage);
-            }
-        } else {
-            List<Storage> storageList = storageRepository.getAll();
-            for (Storage storage : storageList) {
-                storage.flush();
-                if (storage.isEmpty()) {
-                    storageRepository.remove(storage);
-                }
-            }
+        List<Storage> storageList = storageRepository.getAll();
+        for (Storage storage : storageList) {
+            storage.close();
+            storageRepository.remove(storage);
         }
     }
 
@@ -222,7 +227,11 @@ public class DefaultStorageEventDispatcher implements Storage, StorageEventDispa
     }
 
     private void close0(long spanId) {
-        Storage storage = storageRepository.get(spanId);
+        Storage storage = storageRepository.find(spanId);
+        if (storage == null) {
+            return;
+        }
+        storage.close();
         if (storage.isEmpty()) {
             storageRepository.remove(spanId);
         }

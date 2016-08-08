@@ -23,6 +23,8 @@ import java.util.List;
  */
 public interface StorageRepository<T extends Storage> {
 
+    T find(long spanId);
+
     T get(long spanId);
 
     List<T> getAll();

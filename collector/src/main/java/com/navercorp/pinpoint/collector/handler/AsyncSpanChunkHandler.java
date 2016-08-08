@@ -46,6 +46,7 @@ public class AsyncSpanChunkHandler implements SimpleHandler {
             span.setTransactionId(asyncSpanChunk.getTransactionId());
             span.setSpanId(asyncSpanChunk.getSpanId());
             span.setEndPoint(asyncSpanChunk.getEndPoint());
+            span.setStartTime(asyncSpanChunk.getStartTime());
 
             span.setElapsed(asyncSpan.getElapsed());
             span.setSpanEventList(asyncSpan.getSpanEventList());

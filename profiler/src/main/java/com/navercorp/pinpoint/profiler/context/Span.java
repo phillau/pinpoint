@@ -128,4 +128,13 @@ public class Span extends TSpan implements FrameAttachment {
         this.frameObject = null;
         return delete;
     }
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        return super.equals(that);
+    }
+
 }

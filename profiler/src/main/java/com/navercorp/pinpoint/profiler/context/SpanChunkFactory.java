@@ -96,6 +96,7 @@ public class SpanChunkFactory {
         asyncSpanChunk.setTransactionId(transactionId);
 
         asyncSpanChunk.setSpanId(span.getSpanId());
+        asyncSpanChunk.setStartTime(span.getStartTime());
         asyncSpanChunk.setEndPoint(span.getEndPoint());
 
         return asyncSpanChunk;
