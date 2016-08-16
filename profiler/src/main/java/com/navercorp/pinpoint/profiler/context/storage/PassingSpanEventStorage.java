@@ -16,25 +16,41 @@
 
 package com.navercorp.pinpoint.profiler.context.storage;
 
+import com.navercorp.pinpoint.profiler.context.Span;
 import com.navercorp.pinpoint.profiler.context.SpanEvent;
-
-import java.util.List;
 
 /**
  * @author Taejin Koo
  */
-public interface BufferedStorage extends Storage {
+public class PassingSpanEventStorage implements Storage {
 
-    boolean isEmpty();
+    private final Storage delegator;
 
-    int getSize();
+    public PassingSpanEventStorage(Storage storage) {
+        if (storage == null) {
+            throw new NullPointerException("storage may not be null");
+        }
+        this.delegator = storage;
+    }
 
-    int getMaximumBufferSize();
+    @Override
+    public void store(SpanEvent spanEvent) {
+        delegator.store(spanEvent);
+    }
 
-    List<SpanEvent> drainBuffers();
+    @Override
+    public void store(Span span) {
+        // do nothing
+    }
 
-    List<SpanEvent> drainBuffers(int size);
+    @Override
+    public void flush() {
+        // do nothing
+    }
 
-    long getLastAccessTime();
+    @Override
+    public void close() {
+        // do nothing
+    }
 
 }

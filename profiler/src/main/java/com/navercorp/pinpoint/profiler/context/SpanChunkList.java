@@ -14,27 +14,23 @@
  *
  */
 
-package com.navercorp.pinpoint.profiler.context.storage;
+package com.navercorp.pinpoint.profiler.context;
 
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
+import com.navercorp.pinpoint.thrift.dto.TSpanChunkList;
 
 import java.util.List;
 
 /**
  * @author Taejin Koo
  */
-public interface BufferedStorage extends Storage {
+public class SpanChunkList extends TSpanChunkList {
 
-    boolean isEmpty();
+    public SpanChunkList(List<LiteSpanChunk> spanChunkList) {
+        if (spanChunkList == null) {
+            throw new NullPointerException("spanChunkList must not be null");
+        }
 
-    int getSize();
-
-    int getMaximumBufferSize();
-
-    List<SpanEvent> drainBuffers();
-
-    List<SpanEvent> drainBuffers(int size);
-
-    long getLastAccessTime();
+        setLiteSpanChunkList((List) spanChunkList);
+    }
 
 }

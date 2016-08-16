@@ -23,6 +23,7 @@ import com.navercorp.pinpoint.profiler.sender.DataSender;
 
 /**
  * @author emeroad
+ * @author Taejin Koo
  */
 public class BufferedStorageFactory implements StorageFactory {
 
@@ -38,16 +39,23 @@ public class BufferedStorageFactory implements StorageFactory {
             throw new NullPointerException("config must not be null");
         }
         this.dataSender = dataSender;
-
         this.bufferSize = config.getIoBufferingBufferSize();
-
         this.spanChunkFactory = new SpanChunkFactory(agentInformation);
     }
 
 
+    public BufferedStorageFactory(DataSender dataSender, int bufferSize, SpanChunkFactory spanChunkFactory) {
+        if (dataSender == null) {
+            throw new NullPointerException("dataSender must not be null");
+        }
+        this.dataSender = dataSender;
+        this.bufferSize = bufferSize;
+        this.spanChunkFactory = spanChunkFactory;
+    }
+
     @Override
-    public Storage createStorage() {
-        BufferedStorage bufferedStorage = new BufferedStorage(this.dataSender, spanChunkFactory, this.bufferSize);
+    public BufferedStorage createStorage() {
+        DefaultBufferedStorage bufferedStorage = new DefaultBufferedStorage(this.dataSender, spanChunkFactory, this.bufferSize);
         return bufferedStorage;
     }
 
@@ -58,4 +66,5 @@ public class BufferedStorageFactory implements StorageFactory {
                 ", dataSender=" + dataSender +
                 '}';
     }
+
 }

@@ -171,6 +171,17 @@ public class DefaultProfilerConfig implements ProfilerConfig {
     private boolean ioBufferingEnable;
     private int ioBufferingBufferSize;
 
+    private final boolean DEFAULT_GLOBAL_STORAGE_ENABLE = false;
+    private boolean ioGlobalStorageEnable = DEFAULT_GLOBAL_STORAGE_ENABLE;
+    private final int DEFAULT_GLOBAL_STORAGE_QUEUE_SIZE = 500;
+    private int ioGlobalStorageQueueSize = DEFAULT_GLOBAL_STORAGE_QUEUE_SIZE;
+    private final int DEFAULT_GLOBAL_STORAGE_MAX_SIZE = 500;
+    private int ioGlobalStorageMaxSize = DEFAULT_GLOBAL_STORAGE_MAX_SIZE;
+    private final long DEFAULT_GLOBAL_STORAGE_EXPIRE_TIMEOUT = 60000;
+    private long ioGlobalStorageExpireTimeout = DEFAULT_GLOBAL_STORAGE_EXPIRE_TIMEOUT;
+    private final long DEFAULT_GLOBAL_STORAGE_FLUSH_INTERVAL = 60000;
+    private long ioGlobalStorageFlushInterval = DEFAULT_GLOBAL_STORAGE_FLUSH_INTERVAL;
+
     private int profileJvmCollectInterval;
     private String profileJvmVendorName;
     private boolean profilerJvmCollectDetailedMetrics;
@@ -329,6 +340,31 @@ public class DefaultProfilerConfig implements ProfilerConfig {
     @Override
     public boolean isIoBufferingEnable() {
         return ioBufferingEnable;
+    }
+
+    @Override
+    public boolean isIoGlobalStorageEnable() {
+        return ioGlobalStorageEnable;
+    }
+
+    @Override
+    public int getIoGlobalStorageQueueSize() {
+        return ioGlobalStorageQueueSize;
+    }
+
+    @Override
+    public int getIoGlobalStorageMaxSize() {
+        return ioGlobalStorageMaxSize;
+    }
+
+    @Override
+    public long getIoGlobalExpireTimeout() {
+        return ioGlobalStorageExpireTimeout;
+    }
+
+    @Override
+    public long getIoGlobalFlushInterval() {
+        return ioGlobalStorageFlushInterval;
     }
 
     @Override
@@ -676,9 +712,15 @@ public class DefaultProfilerConfig implements ProfilerConfig {
 
         // configuration for sampling and IO buffer 
         this.ioBufferingEnable = readBoolean("profiler.io.buffering.enable", true);
-
         // it may be a problem to be here.  need to modify(delete or move or .. )  this configuration.
         this.ioBufferingBufferSize = readInt("profiler.io.buffering.buffersize", 20);
+
+        // configuration for global storage
+        this.ioGlobalStorageEnable = readBoolean("profiler.io.globalstorage.enable", DEFAULT_GLOBAL_STORAGE_ENABLE);
+        this.ioGlobalStorageQueueSize = readInt("profiler.io.globalstorage.queue.size", DEFAULT_GLOBAL_STORAGE_QUEUE_SIZE);
+        this.ioGlobalStorageFlushInterval = readLong("profiler.io.globalstorage.flush.interval", DEFAULT_GLOBAL_STORAGE_FLUSH_INTERVAL);
+        this.ioGlobalStorageMaxSize = readInt("profiler.io.globalstorage.max.size", DEFAULT_GLOBAL_STORAGE_MAX_SIZE);
+        this.ioGlobalStorageExpireTimeout = readLong("profiler.io.globalstorage.expire.timeout", DEFAULT_GLOBAL_STORAGE_EXPIRE_TIMEOUT);
 
         // JVM
         this.profileJvmCollectInterval = readInt("profiler.jvm.collect.interval", 1000);
@@ -922,6 +964,16 @@ public class DefaultProfilerConfig implements ProfilerConfig {
         builder.append(ioBufferingEnable);
         builder.append(", ioBufferingBufferSize=");
         builder.append(ioBufferingBufferSize);
+        builder.append(", ioGlobalStorageEnable=");
+        builder.append(ioGlobalStorageEnable);
+        builder.append(", ioGlobalStorageQueueSize=");
+        builder.append(ioGlobalStorageQueueSize);
+        builder.append(", ioGlobalStorageMaxSize=");
+        builder.append(ioGlobalStorageMaxSize);
+        builder.append(", ioGlobalStorageFlushInterval=");
+        builder.append(ioGlobalStorageFlushInterval);
+        builder.append(", ioGlobalStorageExpireTimeout=");
+        builder.append(ioGlobalStorageMaxSize);
         builder.append(", profileJvmCollectInterval=");
         builder.append(profileJvmCollectInterval);
         builder.append(", profilableClassFilter=");

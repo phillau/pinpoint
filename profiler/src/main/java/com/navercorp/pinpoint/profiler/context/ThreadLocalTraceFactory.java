@@ -23,9 +23,9 @@ import com.navercorp.pinpoint.bootstrap.context.TraceId;
 import com.navercorp.pinpoint.bootstrap.sampler.Sampler;
 import com.navercorp.pinpoint.exception.PinpointException;
 import com.navercorp.pinpoint.profiler.context.storage.AsyncStorage;
+import com.navercorp.pinpoint.profiler.context.storage.GlobalSupportedStorageFactory;
 import com.navercorp.pinpoint.profiler.context.storage.Storage;
 import com.navercorp.pinpoint.profiler.context.storage.StorageFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,8 +197,14 @@ public class ThreadLocalTraceFactory implements TraceFactory {
         final TraceId parentTraceId = traceId.getParentTraceId();
         final boolean sampling = true;
         final DefaultTrace trace = new DefaultTrace(traceContext, parentTraceId, IdGenerator.UNTRACKED_ID, sampling);
-        final Storage storage = storageFactory.createStorage();
-        trace.setStorage(new AsyncStorage(storage));
+
+        if (storageFactory instanceof GlobalSupportedStorageFactory) {
+            Storage globalStorage = ((GlobalSupportedStorageFactory) storageFactory).getGlobalStorage();
+            trace.setStorage(globalStorage);
+        } else {
+            final Storage storage = storageFactory.createStorage();
+            trace.setStorage(new AsyncStorage(storage));
+        }
 
         final AsyncTrace asyncTrace = new AsyncTrace(trace, asyncId, traceId.nextAsyncSequence(), startTime);
         bind(asyncTrace);

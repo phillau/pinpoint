@@ -16,25 +16,24 @@
 
 package com.navercorp.pinpoint.profiler.context.storage;
 
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
-
 import java.util.List;
 
 /**
  * @author Taejin Koo
  */
-public interface BufferedStorage extends Storage {
+public interface StorageRepository<T extends Storage> {
 
-    boolean isEmpty();
+    T find(long spanId);
 
-    int getSize();
+    T get(long spanId);
 
-    int getMaximumBufferSize();
+    List<T> getAll();
 
-    List<SpanEvent> drainBuffers();
+    boolean remove(long spanId);
 
-    List<SpanEvent> drainBuffers(int size);
+    boolean remove(T t);
 
-    long getLastAccessTime();
+    int size();
 
 }
+

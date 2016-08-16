@@ -24,7 +24,6 @@ import com.navercorp.pinpoint.profiler.AgentInformation;
 import com.navercorp.pinpoint.profiler.context.Span;
 import com.navercorp.pinpoint.profiler.context.SpanChunkFactory;
 import com.navercorp.pinpoint.profiler.context.SpanEvent;
-import com.navercorp.pinpoint.profiler.context.storage.BufferedStorage;
 import com.navercorp.pinpoint.profiler.sender.CountingDataSender;
 
 import org.junit.Assert;
@@ -45,7 +44,7 @@ public class BufferedStorageTest {
 
     @Test
     public void testStore_Noflush() throws Exception {
-        BufferedStorage bufferedStorage = new BufferedStorage(countingDataSender, spanChunkFactory, 10);
+        DefaultBufferedStorage bufferedStorage = new DefaultBufferedStorage(countingDataSender, spanChunkFactory, 10);
 
         Span span = new Span();
         SpanEvent spanEvent = new SpanEvent(span);
@@ -57,7 +56,7 @@ public class BufferedStorageTest {
 
     @Test
     public void testStore_flush() throws Exception {
-        BufferedStorage bufferedStorage = new BufferedStorage(countingDataSender, spanChunkFactory, 1);
+        DefaultBufferedStorage bufferedStorage = new DefaultBufferedStorage(countingDataSender, spanChunkFactory, 1);
 
         Span span = new Span();
         SpanEvent spanEvent = new SpanEvent(span);
@@ -74,7 +73,7 @@ public class BufferedStorageTest {
 
     @Test
     public void testStore_spanFlush() throws Exception {
-        BufferedStorage bufferedStorage = new BufferedStorage(countingDataSender, spanChunkFactory, 10);
+        DefaultBufferedStorage bufferedStorage = new DefaultBufferedStorage(countingDataSender, spanChunkFactory, 10);
 
         Span span = new Span();
         bufferedStorage.store(span);
@@ -90,7 +89,7 @@ public class BufferedStorageTest {
 
     @Test
     public void testStore_spanLastFlush() throws Exception {
-        BufferedStorage bufferedStorage = new BufferedStorage(countingDataSender, spanChunkFactory, 10);
+        DefaultBufferedStorage bufferedStorage = new DefaultBufferedStorage(countingDataSender, spanChunkFactory, 10);
 
         Span span = new Span();
         SpanEvent spanEvent = new SpanEvent(span);

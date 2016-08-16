@@ -126,6 +126,25 @@ struct TSpanChunk {
   11: optional i16 applicationServiceType
 }
 
+struct TLiteSpanChunk {
+  1: i16 serviceType
+  2: binary  transactionId;
+
+  8: i64 spanId
+  9: optional string endPoint
+
+ 10: list<TSpanEvent> spanEventList
+
+ 11: optional i16 applicationServiceType
+}
+
+struct TSpanChunkList {
+  1: string agentId
+  2: string applicationName
+  3: i64 agentStartTime
+
+  4: list<TLiteSpanChunk> liteSpanChunkList
+}
 
 struct TStringMetaData {
 

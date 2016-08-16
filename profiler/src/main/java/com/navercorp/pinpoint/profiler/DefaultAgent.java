@@ -31,9 +31,14 @@ import com.navercorp.pinpoint.common.service.ServiceTypeRegistryService;
 import com.navercorp.pinpoint.common.trace.ServiceType;
 import com.navercorp.pinpoint.profiler.context.DefaultServerMetaDataHolder;
 import com.navercorp.pinpoint.profiler.context.DefaultTraceContext;
+import com.navercorp.pinpoint.profiler.context.SpanChunkFactory;
 import com.navercorp.pinpoint.profiler.context.TransactionCounter;
 import com.navercorp.pinpoint.profiler.context.active.ActiveTraceLocator;
 import com.navercorp.pinpoint.profiler.context.storage.BufferedStorageFactory;
+import com.navercorp.pinpoint.profiler.context.storage.DefaultGlobalSupportedStorageFactory;
+import com.navercorp.pinpoint.profiler.context.storage.FlushEvent;
+import com.navercorp.pinpoint.profiler.context.storage.GlobalStorage;
+import com.navercorp.pinpoint.profiler.context.storage.ScheduledStorageEventGenerator;
 import com.navercorp.pinpoint.profiler.context.storage.SpanStorageFactory;
 import com.navercorp.pinpoint.profiler.context.storage.StorageFactory;
 import com.navercorp.pinpoint.profiler.instrument.ASMBytecodeDumpService;
@@ -326,12 +331,32 @@ public class DefaultAgent implements Agent {
     }
 
     protected StorageFactory createStorageFactory() {
-        if (profilerConfig.isIoBufferingEnable()) {
+        if (profilerConfig.isIoGlobalStorageEnable()) {
+            int bufferSize = profilerConfig.getIoBufferingBufferSize();
+            SpanChunkFactory spanChunkFactory = new SpanChunkFactory(agentInformation);
+
+            BufferedStorageFactory localRootSpanStorageFactory = new BufferedStorageFactory(this.spanDataSender, bufferSize, spanChunkFactory);
+            GlobalStorage globalStorage = new GlobalStorage(spanDataSender, bufferSize, spanChunkFactory);
+            globalStorage.start(profilerConfig.getIoGlobalStorageQueueSize());
+
+            long expiryTimeout = profilerConfig.getIoGlobalExpireTimeout();
+            int maximumCapacity = profilerConfig.getIoGlobalStorageMaxSize();
+            long ioGlobalFlushInterval = profilerConfig.getIoGlobalFlushInterval();
+
+            ScheduledStorageEventGenerator scheduledStorageEventGenerator  = new ScheduledStorageEventGenerator(globalStorage);
+            FlushEvent flushEvent = new FlushEvent();
+            flushEvent.setExpiryTime(expiryTimeout);
+            flushEvent.setMaximumBufferSize(maximumCapacity);
+
+            scheduledStorageEventGenerator.start(flushEvent, ioGlobalFlushInterval);
+
+            return new DefaultGlobalSupportedStorageFactory(localRootSpanStorageFactory, globalStorage);
+        } else if (profilerConfig.isIoBufferingEnable()) {
             return new BufferedStorageFactory(this.spanDataSender, this.profilerConfig, this.agentInformation);
         } else {
             return new SpanStorageFactory(spanDataSender);
-
         }
+
     }
 
     private Sampler createSampler() {

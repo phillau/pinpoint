@@ -75,6 +75,16 @@ public interface ProfilerConfig {
 
     boolean isIoBufferingEnable();
 
+    boolean isIoGlobalStorageEnable();
+
+    int getIoGlobalStorageQueueSize();
+
+    long getIoGlobalFlushInterval();
+
+    int getIoGlobalStorageMaxSize();
+
+    long getIoGlobalExpireTimeout();
+
     int getIoBufferingBufferSize();
 
     int getProfileJvmCollectInterval();
