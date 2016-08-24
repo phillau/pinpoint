@@ -98,18 +98,16 @@ public class GlobalAutoFlusher implements StorageFlusher {
 
         @Override
         public void run() {
-            int spanChunkListSize = spanChunkList.size();
-            SpanChunk[] spanChunks = new SpanChunk[spanChunkListSize];
-            spanChunkList.toArray(spanChunks);
+            ArrayList<SpanChunk> copiedSpanChunkList = new ArrayList<SpanChunk>(spanChunkList);
+            spanChunkList.removeAll(copiedSpanChunkList);
 
-            int spanListSize = spanList.size();
-            Span[] spans = new Span[spanListSize];
-            spanList.toArray(spans);
+            ArrayList<Span> copiedSpanList = new ArrayList<Span>(spanList);
+            spanList.removeAll(copiedSpanList);
 
-            flush0(spanChunks, spans);
+            flush0(copiedSpanChunkList, copiedSpanList);
         }
 
-        private void flush0(SpanChunk[] spanChunks, Span[] spans) {
+        private void flush0(List<SpanChunk> spanChunks, List<Span> spans) {
             SpanAndSpanChunkListDataHolder dataHolder = new SpanAndSpanChunkListDataHolder(flushBufferSize);
 
             for (SpanChunk spanChunk : spanChunks) {
@@ -148,8 +146,8 @@ public class GlobalAutoFlusher implements StorageFlusher {
     private class SpanAndSpanChunkListDataHolder {
 
         private final int maxSpanEventSize;
-        private final List<SpanChunk> spanChunkList = new ArrayList<SpanChunk>();
-        private final List<Span> spanList = new ArrayList<Span>();
+        private List<SpanChunk> spanChunkList = new ArrayList<SpanChunk>();
+        private List<Span> spanList = new ArrayList<Span>();
         private int canStoreSpanEventSize;
 
         private SpanAndSpanChunkListDataHolder(int maxSpanEventSize) {
@@ -203,8 +201,8 @@ public class GlobalAutoFlusher implements StorageFlusher {
         }
 
         private void clear() {
-            spanChunkList.clear();
-            spanList.clear();
+            spanChunkList = new ArrayList<SpanChunk>();
+            spanList = new ArrayList<Span>();
             canStoreSpanEventSize = maxSpanEventSize;
         }
 

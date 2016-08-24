@@ -8,12 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Taejin Koo
  */
+@Service
 public class SpanAndSpanChunkListHandler implements SimpleHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,15 +35,22 @@ public class SpanAndSpanChunkListHandler implements SimpleHandler {
         }
 
         TSpanAndSpanChunkList spanAndSpanChunkList = (TSpanAndSpanChunkList) tbase;
-
-        List<TSpanChunk> spanChunkList = spanAndSpanChunkList.getSpanChunkList();
-        for (TSpanChunk spanChunk : spanChunkList) {
-            spanChunkHandler.handleSimple(spanChunk);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Received SpanAndSpanChunkList={}", spanAndSpanChunkList);
         }
 
-        List<TSpan> spanList = spanAndSpanChunkList.getSpanList();
-        for (TSpan span : spanList) {
-            spanHandler.handleSimple(span);
+        if (spanAndSpanChunkList.isSetSpanChunkList()) {
+            List<TSpanChunk> spanChunkList = spanAndSpanChunkList.getSpanChunkList();
+            for (TSpanChunk spanChunk : spanChunkList) {
+                spanChunkHandler.handleSimple(spanChunk);
+            }
+        }
+
+        if (spanAndSpanChunkList.isSetSpanList()) {
+            List<TSpan> spanList = spanAndSpanChunkList.getSpanList();
+            for (TSpan span : spanList) {
+                spanHandler.handleSimple(span);
+            }
         }
     }
 
