@@ -16,18 +16,14 @@
 
 package com.navercorp.pinpoint.profiler.context.storage;
 
-import com.navercorp.pinpoint.profiler.context.Span;
-import com.navercorp.pinpoint.profiler.context.SpanEvent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.navercorp.pinpoint.profiler.context.storage.flush.LogStorageFlusher;
 
 /**
  * @author emeroad
  */
 public class LogStorageFactory implements StorageFactory {
 
-    private final static Storage DEFAULT_STORAGE = new LogStorage();
+    private final static DirectFlushStorage DEFAULT_STORAGE = new DirectFlushStorage(new LogStorageFlusher());
 
     @Override
     public Storage createStorage() {
@@ -35,24 +31,4 @@ public class LogStorageFactory implements StorageFactory {
         return DEFAULT_STORAGE;
     }
 
-    public static class LogStorage implements Storage {
-        private final Logger logger = LoggerFactory.getLogger(this.getClass());
-        @Override
-        public void store(SpanEvent spanEvent) {
-            logger.debug("log spanEvent:{}", spanEvent);
-        }
-
-        @Override
-        public void store(Span span) {
-            logger.debug("log span:{}", span);
-        }
-
-        @Override
-        public void flush() {
-        }
-
-        @Override
-        public void close() {
-        }
-    }
 }

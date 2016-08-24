@@ -18,6 +18,8 @@ package com.navercorp.pinpoint.profiler.context;
 
 import com.navercorp.pinpoint.bootstrap.context.Trace;
 import com.navercorp.pinpoint.profiler.context.storage.SpanStorage;
+import com.navercorp.pinpoint.profiler.context.storage.flush.RemoteFlusher;
+import com.navercorp.pinpoint.profiler.context.storage.flush.StorageFlusher;
 import com.navercorp.pinpoint.profiler.sender.EnhancedDataSender;
 import com.navercorp.pinpoint.profiler.sender.LoggingDataSender;
 import com.navercorp.pinpoint.rpc.FutureListener;
@@ -41,7 +43,9 @@ public class TraceTest {
         DefaultTraceId traceId = new DefaultTraceId("agent", 0, 1);
         DefaultTraceContext defaultTraceContext = getDefaultTraceContext();
         DefaultTrace trace = new DefaultTrace(defaultTraceContext, traceId, 0L, true);
-        trace.setStorage(new SpanStorage(LoggingDataSender.DEFAULT_LOGGING_DATA_SENDER));
+
+        StorageFlusher storageFlusher = new RemoteFlusher(LoggingDataSender.DEFAULT_LOGGING_DATA_SENDER);
+        trace.setStorage(new SpanStorage(storageFlusher));
         trace.traceBlockBegin();
 
         // get data form db
@@ -59,7 +63,9 @@ public class TraceTest {
         DefaultTraceContext defaultTraceContext = getDefaultTraceContext();
         DefaultTrace trace = new DefaultTrace(defaultTraceContext, traceId, 0L, true);
         TestDataSender dataSender = new TestDataSender();
-        trace.setStorage(new SpanStorage(LoggingDataSender.DEFAULT_LOGGING_DATA_SENDER));
+
+        StorageFlusher storageFlusher = new RemoteFlusher(LoggingDataSender.DEFAULT_LOGGING_DATA_SENDER);
+        trace.setStorage(new SpanStorage(storageFlusher));
         trace.close();
 
         logger.info(String.valueOf(dataSender.event));

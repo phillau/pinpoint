@@ -329,8 +329,7 @@ public class DefaultAgent implements Agent {
         if (profilerConfig.isIoBufferingEnable()) {
             return new BufferedStorageFactory(this.spanDataSender, this.profilerConfig, this.agentInformation);
         } else {
-            return new SpanStorageFactory(spanDataSender);
-
+            return new SpanStorageFactory(spanDataSender, this.profilerConfig);
         }
     }
 

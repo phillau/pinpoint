@@ -16,6 +16,12 @@
 
 package com.navercorp.pinpoint.profiler.context.storage;
 
+import com.navercorp.pinpoint.bootstrap.config.ProfilerConfig;
+import com.navercorp.pinpoint.profiler.context.storage.flush.DispatcherFlusher;
+import com.navercorp.pinpoint.profiler.context.storage.flush.GlobalAutoFlusher;
+import com.navercorp.pinpoint.profiler.context.storage.flush.RemoteFlusher;
+import com.navercorp.pinpoint.profiler.context.storage.flush.SpanEventThresholdCondition;
+import com.navercorp.pinpoint.profiler.context.storage.flush.StorageFlusher;
 import com.navercorp.pinpoint.profiler.sender.DataSender;
 
 /**
@@ -23,17 +29,35 @@ import com.navercorp.pinpoint.profiler.sender.DataSender;
  */
 public class SpanStorageFactory implements StorageFactory {
 
-    protected final DataSender dataSender;
+    protected final StorageFlusher flusher;
 
-    public SpanStorageFactory(DataSender dataSender) {
+    public SpanStorageFactory(DataSender dataSender, ProfilerConfig config) {
         if (dataSender == null) {
             throw new NullPointerException("dataSender must not be null");
         }
-        this.dataSender = dataSender;
+
+        RemoteFlusher remoteFlusher = new RemoteFlusher(dataSender);
+        if (config.isIoGlobalStorageEnable()) {
+            DispatcherFlusher dispatcherFlusher = new DispatcherFlusher(remoteFlusher);
+
+            int globalStorageBufferSize = config.getIoGlobalStorageBufferSize();
+            int upperLimitPercent = config.getIoGlobalStorageUseUpperLimitPercent();
+
+            SpanEventThresholdCondition condition = new SpanEventThresholdCondition(upperLimitPercent, globalStorageBufferSize);
+            GlobalAutoFlusher globalAutoFlusher = new GlobalAutoFlusher(dataSender, globalStorageBufferSize);
+            globalAutoFlusher.start(config.getIoGlobalStorageFlushInterval());
+
+            dispatcherFlusher.addFlusherCondition(condition, globalAutoFlusher);
+
+            this.flusher = dispatcherFlusher;
+        } else {
+            this.flusher = remoteFlusher;
+        }
     }
 
     @Override
     public Storage createStorage() {
-        return new SpanStorage(this.dataSender);
+        return new SpanStorage(flusher);
     }
+
 }

@@ -51,4 +51,5 @@ public class AsyncStorage implements Storage {
     public void close() {
         storage.close();
     }
+
 }
