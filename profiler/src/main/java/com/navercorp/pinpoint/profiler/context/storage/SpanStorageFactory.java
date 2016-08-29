@@ -43,7 +43,7 @@ public class SpanStorageFactory implements StorageFactory {
             int globalStorageBufferSize = config.getIoGlobalStorageBufferSize();
             int upperLimitPercent = config.getIoGlobalStorageUseUpperLimitPercent();
 
-            SpanEventThresholdCondition condition = new SpanEventThresholdCondition(upperLimitPercent, globalStorageBufferSize);
+            SpanEventThresholdCondition condition = new SpanEventThresholdCondition(globalStorageBufferSize, upperLimitPercent);
             GlobalAutoFlusher globalAutoFlusher = new GlobalAutoFlusher(dataSender, globalStorageBufferSize);
             globalAutoFlusher.start(config.getIoGlobalStorageFlushInterval());
 

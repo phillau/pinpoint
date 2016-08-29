@@ -43,7 +43,7 @@ public class DispatcherFlusher implements StorageFlusher {
         }
 
         if (condition instanceof SpanFlushCondition) {
-            spanChunkFlusherRepository.put((SpanChunkFlushCondition) condition, flusher);
+            spanFlusherRepository.put((SpanFlushCondition) condition, flusher);
         }
     }
 

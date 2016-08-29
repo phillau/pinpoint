@@ -91,7 +91,6 @@ public class GlobalAutoFlusher implements StorageFlusher {
     }
 
     private final class FlushTask implements Runnable {
-        private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         public FlushTask() {
         }
@@ -138,7 +137,18 @@ public class GlobalAutoFlusher implements StorageFlusher {
                 return;
             }
 
-            dataSender.send(spanAndSpanChunkList);
+            int spanSize = spanAndSpanChunkList.getSpanListSize();
+            int spanChunkSize = spanAndSpanChunkList.getSpanChunkListSize();
+
+            if (spanSize + spanChunkSize == 1) {
+                if (spanSize == 1) {
+                    dataSender.send(ListUtils.getFirst(spanAndSpanChunkList.getSpanList()));
+                } else {
+                    dataSender.send(ListUtils.getFirst(spanAndSpanChunkList.getSpanChunkList()));
+                }
+            } else {
+                dataSender.send(spanAndSpanChunkList);
+            }
         }
 
     }
@@ -146,9 +156,10 @@ public class GlobalAutoFlusher implements StorageFlusher {
     private class SpanAndSpanChunkListDataHolder {
 
         private final int maxSpanEventSize;
+        private int canStoreSpanEventSize;
+
         private List<SpanChunk> spanChunkList = new ArrayList<SpanChunk>();
         private List<Span> spanList = new ArrayList<Span>();
-        private int canStoreSpanEventSize;
 
         private SpanAndSpanChunkListDataHolder(int maxSpanEventSize) {
             this.maxSpanEventSize = maxSpanEventSize;

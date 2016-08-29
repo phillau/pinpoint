@@ -710,7 +710,7 @@ public class DefaultProfilerConfig implements ProfilerConfig {
 
         this.ioGlobalStorageEnable = readBoolean("profiler.io.globalstorage.enable", DEFAULT_GLOBAL_STORAGE_ENABLE);
         this.ioGlobalStorageFlushInterval = readLong("profiler.io.globalstorage.flush.interval", DEFAULT_GLOBAL_STORAGE_FLUSH_INTERVAL);
-        if (ioBufferingBufferSize > 0) {
+        if (ioBufferingEnable && ioBufferingBufferSize > 0) {
             this.ioGlobalStorageBufferSize = readInt("profiler.io.globalstorage.flush.buffersize", ioBufferingBufferSize);
         } else {
             this.ioGlobalStorageBufferSize = readInt("profiler.io.globalstorage.flush.buffersize", DEFAULT_GLOBAL_STORAGE_BUFFER_SIZE);

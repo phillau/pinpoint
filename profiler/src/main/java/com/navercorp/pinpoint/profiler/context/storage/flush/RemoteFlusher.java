@@ -22,7 +22,7 @@ public class RemoteFlusher implements StorageFlusher {
 
     @Override
     public void flush(SpanEvent spanEvent) {
-        dataSender.send(spanEvent);
+        throw new UnsupportedOperationException("flush(SpanEvent spanEvent)");
     }
 
     @Override

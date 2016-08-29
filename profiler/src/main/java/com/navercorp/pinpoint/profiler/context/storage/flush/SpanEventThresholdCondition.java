@@ -15,12 +15,12 @@ public class SpanEventThresholdCondition implements SpanChunkFlushCondition, Spa
         this.threshold = threshold;
     }
 
-    public SpanEventThresholdCondition(int percentage, int maxSize) {
-        if (maxSize < 0) {
+    public SpanEventThresholdCondition(int maxSize, int percentage) {
+        if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize must be positive number");
         }
 
-        if (percentage <= 0 && 100 >= percentage) {
+        if (percentage < 0 || percentage > 100) {
             throw new IllegalArgumentException("percentage number must be between 0 and 100");
         }
 
@@ -49,6 +49,8 @@ public class SpanEventThresholdCondition implements SpanChunkFlushCondition, Spa
         return false;
     }
 
-
+    public int getThreshold() {
+        return threshold;
+    }
 
 }
