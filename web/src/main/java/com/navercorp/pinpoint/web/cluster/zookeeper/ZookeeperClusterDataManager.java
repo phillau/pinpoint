@@ -49,7 +49,7 @@ public class ZookeeperClusterDataManager implements ClusterDataManager, Watcher 
     static final long DEFAULT_RECONNECT_DELAY_WHEN_SESSION_EXPIRED = 30000;
 
     private static final String PINPOINT_CLUSTER_PATH = "/pinpoint-cluster";
-    private static final String PINPOINT_WEB_CLUSTER_PATh = PINPOINT_CLUSTER_PATH + "/web";
+    private static final String PINPOINT_WEB_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/web";
     private static final String PINPOINT_COLLECTOR_CLUSTER_PATH = PINPOINT_CLUSTER_PATH + "/collector";
 
     private static final long SYNC_INTERVAL_TIME_MILLIS = 15 * 1000;
@@ -102,7 +102,7 @@ public class ZookeeperClusterDataManager implements ClusterDataManager, Watcher 
     // not too much overhead, just logging
     @Override
     public boolean registerWebCluster(String zNodeName, byte[] contents) {
-        String zNodePath = clusterDataManagerHelper.bindingPathAndZNode(PINPOINT_WEB_CLUSTER_PATh, zNodeName);
+        String zNodePath = clusterDataManagerHelper.bindingPathAndZNode(PINPOINT_WEB_CLUSTER_PATH, zNodeName);
 
         logger.info("registerWebCluster() started. create UniqPath={}.", zNodePath);
 
