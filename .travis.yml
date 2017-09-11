@@ -1,13 +1,16 @@
 language: java
 
 jdk:
- - oraclejdk7
+ - openjdk7
 
-env: JAVA_6_HOME=/usr/lib/jvm/java-6-openjdk-amd64 JAVA_7_HOME=/usr/lib/jvm/java-7-oracle JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
-
+env: JAVA_6_HOME=/usr/lib/jvm/java-6-openjdk-amd64 JAVA_7_HOME=/usr/lib/jvm/java-7-openjdk-amd64 JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
+                  /usr/lib/jvm/java-6-openjdk-amd64
 install:
  - set -o pipefail
- - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V | grep -Fv '[copy'
+ - $JAVA_6_HOME/jre/bin/java -version
+ - $JAVA_7_HOME/jre/bin/java -version
+ - $JAVA_8_HOME/jre/bin/java -version
+ - mvn -X install -DskipTests=true -Dmaven.javadoc.skip=true -B -V | grep -Fv '[copy'
 
 script: mvn clover2:setup test -Ptest clover2:aggregate clover2:clover -e | grep -Fv 'DEBUG' | grep -Fv '[copy'
 
@@ -15,4 +18,4 @@ after_success:
  - bash <(curl -s https://codecov.io/bash)
 
 dist:
- - precise
+ - trusty
