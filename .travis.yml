@@ -6,6 +6,7 @@ jdk:
 env: JAVA_6_HOME=/usr/lib/jvm/java-6-openjdk-amd64 JAVA_7_HOME=/usr/lib/jvm/java-7-openjdk-amd64 JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
                   /usr/lib/jvm/java-6-openjdk-amd64
 install:
+ - ls -alR $JAVA_6_HOME/
  - set -o pipefail
  - $JAVA_6_HOME/jre/bin/java -version
  - $JAVA_7_HOME/jre/bin/java -version
