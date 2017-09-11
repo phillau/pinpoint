@@ -3,19 +3,23 @@ language: java
 addons:
   apt:
     packages:
-      - oracle-java6-installer
+      - openjdk-6-jdk
 
 jdk:
- - openjdk7
+ - openjdk6
+ - oraclejdk7
+ - oraclejdk8
 
-env: JAVA_6_HOME=/usr/lib/jvm/java-6-openjdk-amd64 JAVA_7_HOME=/usr/lib/jvm/java-7-openjdk-amd64 JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
-                  /usr/lib/jvm/java-6-openjdk-amd64
+env: JAVA_6_HOME==/usr/lib/jvm/java-6-openjdk-amd64 JAVA_7_HOME=/usr/lib/jvm/java-7-oracle JAVA_8_HOME=/usr/lib/jvm/java-8-oracle
+
 install:
- - ls -alR $JAVA_6_HOME/
  - set -o pipefail
- - $JAVA_6_HOME/jre/bin/java -version
- - $JAVA_7_HOME/jre/bin/java -version
- - $JAVA_8_HOME/jre/bin/java -version
+ - ls -al $JAVA_6_HOME
+ - ls -al $JAVA_7_HOME
+ - ls -al $JAVA_8_HOME
+ - $JAVA_6_HOME/bin/java -version
+ - $JAVA_7_HOME/bin/java -version
+ - $JAVA_8_HOME/bin/java -version
  - mvn -X install -DskipTests=true -Dmaven.javadoc.skip=true -B -V | grep -Fv '[copy'
 
 script: mvn clover2:setup test -Ptest clover2:aggregate clover2:clover -e | grep -Fv 'DEBUG' | grep -Fv '[copy'
